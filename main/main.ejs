@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HackSlash | Interview Scheduler</title>
+<meta name="description" content="Book your interview slot organized by HackSlash.">
+<meta name="author" content="HackSlash">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --card-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  --hover-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  max-width: 600px;
+}
+
+.main-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.main-card:hover {
+  box-shadow: var(--hover-shadow);
+  transform: translateY(-5px);
+}
+
+.header-section {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.header-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="white" stop-opacity="0.1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient></defs><ellipse fill="url(%23a)" cx="50" cy="10" rx="50" ry="10"/></svg>') no-repeat center;
+  opacity: 0.3;
+}
+
+.header-section h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-section p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.form-section {
+  padding: 2rem;
+}
+
+.form-floating {
+  margin-bottom: 1.5rem;
+}
+
+.form-floating > .form-control {
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+  padding: 1rem 0.75rem;
+  height: auto;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.form-floating > .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+  background: white;
+}
+
+.form-floating > label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: #667eea;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.success-message {
+  background: var(--success-gradient);
+  color: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+  animation: slideInDown 0.6s ease-out;
+  display: none;
+}
+
+.error-message {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+  animation: shake 0.6s ease-out;
+  display: none;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 20%, 40%, 60%, 80% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+}
+
+.loading-spinner {
+  display: none;
+  margin-left: 10px;
+}
+
+.slot-badge {
+  display: inline-block;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0.25rem;
+}
+
+.info-section {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-left: 4px solid #667eea;
+}
+
+.info-section h5 {
+  color: #667eea;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.info-section ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.info-section li {
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.form-control:invalid {
+  border-color: #dc3545;
+}
+
+.form-control:valid {
+  border-color: #28a745;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .header-section {
+    padding: 1.5rem;
+  }
+  
+  .header-section h1 {
+    font-size: 2rem;
+  }
+  
+  .form-section {
+    padding: 1.5rem;
+  }
+}
+
+.floating-shapes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.shape {
+  position: absolute;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape:nth-child(1) {
+  top: 20%;
+  left: 10%;
+  width: 80px;
+  height: 80px;
+  animation-delay: 0s;
+}
+
+.shape:nth-child(2) {
+  top: 60%;
+  right: 10%;
+  width: 120px;
+  height: 120px;
+  animation-delay: 2s;
+}
+
+.shape:nth-child(3) {
+  bottom: 20%;
+  left: 20%;
+  width: 60px;
+  height: 60px;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+</style>
+</head>
+<body>
+<!-- HackSlash Banner -->
+<div class="bg-dark text-white py-4 mb-0">
+  <div class="container text-center">
+    <h1 class="fw-bold mb-2">🚀 HackSlash Presents</h1>
+    <p class="mb-0 fs-5 text-light">Official Interview Slot Scheduling Portal</p>
+  </div>
+</div>
+
+<div class="floating-shapes">
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+</div>
+
+<div class="container py-5">
+  <div class="main-card">
+    <div class="header-section">
+      <i class="fas fa-calendar-check fa-3x mb-3"></i>
+      <h1>Interview Scheduleing</h1>
+      <p>Schedule your interview session with ease</p>
+    </div>
+    
+    <div class="form-section">
+      <div id="successMessage" class="success-message">
+        <i class="fas fa-check-circle fa-2x mb-2"></i>
+        <div>Your interview has been successfully booked!</div>
+        <small>You will receive a confirmation email shortly.</small>
+      </div>
+      
+      <div id="errorMessage" class="error-message">
+        <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+        <div id="errorText">Booking failed. Please try again.</div>
+      </div>
+      
+      <div class="info-section">
+        <h5><i class="fas fa-info-circle me-2"></i>Before You Begin</h5>
+        <ul>
+          <li>Ensure your resume is accessible via Google Drive or a direct PDF URL</li>
+          <li>Have your academic details ready</li>
+          <li>Choose your preferred time slot carefully - slots are limited</li>
+          <li>Check your email for confirmation after booking</li>
+          <li><span id="totalSlots" class="text-primary fw-bold">Loading slot information...</span></li>
+        </ul>
+      </div>
+      
+      <form id="bookingForm" novalidate>
+        <div class="form-floating">
+          <input type="text" name="name" id="name" class="form-control" placeholder="Full Name" required>
+          <label for="name"><i class="fas fa-user me-2"></i>Full Name</label>
+          <div class="invalid-feedback">Please provide your full name.</div>
+        </div>
+        
+        <div class="form-floating">
+          <input type="email" name="email" id="email" class="form-control" placeholder="Email Address" required>
+          <label for="email"><i class="fas fa-envelope me-2"></i>Email Address</label>
+          <div class="invalid-feedback">Please provide a valid email address.</div>
+        </div>
+        
+        <div class="form-floating">
+          <input type="tel" name="phoneNo" id="phoneNo" class="form-control" placeholder="Phone Number" required pattern="[0-9]{10,}">
+          <label for="phoneNo"><i class="fas fa-phone me-2"></i>Phone Number</label>
+          <div class="invalid-feedback">Please provide a valid phone number (minimum 10 digits).</div>
+        </div>
+        
+        <div class="form-floating">
+          <select name="year" id="year" class="form-control" required>
+            <option value="">Select Your Year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+          <label for="year"><i class="fas fa-graduation-cap me-2"></i>Academic Year</label>
+          <div class="invalid-feedback">Please select your academic year.</div>
+        </div>
+        
+        <div class="form-floating">
+          <select name="branch" id="branch" class="form-control" required>
+            <option value="">Select Your Department</option>
+            <option value="Computer Science Engineering">Computer Science Engineering</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+            <option value="Electrical Engineering">Electrical Engineering</option>
+            <option value="Mechanical Engineering">Mechanical Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Chemical Engineering">Chemical Engineering</option>
+            <option value="Biotechnology">Biotechnology</option>
+            <option value="Aerospace Engineering">Aerospace Engineering</option>
+            <option value="Automobile Engineering">Automobile Engineering</option>
+            <option value="Industrial Engineering">Industrial Engineering</option>
+            <option value="Production Engineering">Production Engineering</option>
+            <option value="Mathematics and Computing">Mathematics and Computing</option>
+            <option value="Applied Sciences">Applied Sciences</option>
+            <option value="Management Studies">Management Studies</option>
+            <option value="Other">Other</option>
+          </select>
+          <label for="branch"><i class="fas fa-code-branch me-2"></i>Branch/Department</label>
+          <div class="invalid-feedback">Please select your branch or department.</div>
+        </div>
+        
+        <div class="form-floating">
+          <select name="preferredTime" id="preferredTime" class="form-control" required>
+            <option value="">Loading available slots...</option>
+          </select>
+          <label for="preferredTime"><i class="fas fa-clock me-2"></i>Preferred Time Slot</label>
+          <div class="invalid-feedback">Please select a preferred time slot.</div>
+        </div>
+        
+        <div class="form-floating">
+          <input type="url" name="resumeUrl" id="resumeUrl" class="form-control" placeholder="Resume URL" required>
+          <label for="resumeUrl"><i class="fas fa-link me-2"></i>Resume Link (Google Drive/PDF URL)</label>
+          <div class="invalid-feedback">Please provide a valid URL to your resume.</div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+          <i class="fas fa-calendar-plus me-2"></i>
+          Book My Interview Slot
+          <div class="loading-spinner spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('bookingForm');
+const successMessage = document.getElementById('successMessage');
+const errorMessage = document.getElementById('errorMessage');
+const errorText = document.getElementById('errorText');
+const slotSelect = document.getElementById('preferredTime');
+const submitBtn = document.getElementById('submitBtn');
+const loadingSpinner = document.querySelector('.loading-spinner');
+
+// Enhanced form validation
+function validateForm() {
+  let isValid = true;
+  const inputs = form.querySelectorAll('input, select');
+  
+  inputs.forEach(input => {
+    if (!input.checkValidity()) {
+      input.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      input.classList.remove('is-invalid');
+      input.classList.add('is-valid');
+    }
+  });
+  
+  return isValid;
+}
+
+// Real-time validation
+form.addEventListener('input', function(e) {
+  if (e.target.checkValidity()) {
+    e.target.classList.remove('is-invalid');
+    e.target.classList.add('is-valid');
+  } else {
+    e.target.classList.remove('is-valid');
+    e.target.classList.add('is-invalid');
+  }
+});
+
+// Load available slots with error handling
+async function loadSlots() {
+  try {
+    slotSelect.innerHTML = '<option value="">Loading available slots...</option>';
+    
+    const res = await fetch('http://localhost:5000/api/slots');
+    const data = await res.json();
+    
+    if (res.ok && data.success) {
+      slotSelect.innerHTML = '<option value="">Select your preferred time</option>';
+      
+      if (data.data.length === 0) {
+        slotSelect.innerHTML = '<option value="">No slots available at the moment</option>';
+        showError('No interview slots are currently available. Please check back later.');
+        return;
+      }
+      
+      data.data.forEach(slot => {
+        const option = document.createElement('option');
+        option.value = slot.time;
+        option.textContent = slot.formattedTime;
+        slotSelect.appendChild(option);
+      });
+      
+      // Show total available slots
+      const totalSlotsInfo = document.getElementById('totalSlots');
+      if (totalSlotsInfo) {
+        totalSlotsInfo.textContent = `${data.total} slots available`;
+      }
+    } else {
+      throw new Error(data.message || 'Failed to load slots');
+    }
+  } catch (error) {
+    console.error('Error loading slots:', error);
+    slotSelect.innerHTML = '<option value="">Error loading slots - please refresh</option>';
+    showError('Failed to load available time slots. Please check your connection and refresh the page.');
+  }
+}
+
+// Enhanced error display
+function showError(message) {
+  errorText.textContent = message;
+  errorMessage.style.display = 'block';
+  successMessage.style.display = 'none';
+  
+  setTimeout(() => {
+    errorMessage.style.display = 'none';
+  }, 5000);
+}
+
+// Enhanced success display
+function showSuccess(message = null) {
+  const successDiv = successMessage.querySelector('div');
+  if (message) {
+    successDiv.textContent = message;
+  }
+  
+  successMessage.style.display = 'block';
+  errorMessage.style.display = 'none';
+  
+  // Scroll to success message
+  successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+  setTimeout(() => {
+    successMessage.style.display = 'none';
+  }, 5000);
+}
+
+// Enhanced form submission
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  if (!validateForm()) {
+    showError('Please fill in all required fields correctly.');
+    return;
+  }
+  
+  // Show loading state
+  submitBtn.disabled = true;
+  loadingSpinner.style.display = 'inline-block';
+  
+  const formData = {
+    name: form.name.value.trim(),
+    email: form.email.value.trim(),
+    phoneNo: form.phoneNo.value.trim(),
+    year: form.year.value,
+    branch: form.branch.value.trim(),
+    preferredTime: form.preferredTime.value,
+    resumeUrl: form.resumeUrl.value.trim()
+  };
+  
+  try {
+    const res = await fetch('http://localhost:5000/api/book', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+    
+    const result = await res.json();
+    
+    if (res.ok && result.success) {
+      form.reset();
+      form.querySelectorAll('.is-valid').forEach(el => el.classList.remove('is-valid'));
+      showSuccess();
+      loadSlots(); // Reload available slots
+    } else {
+      throw new Error(result.message || 'Booking failed. Please try again.');
+    }
+  } catch (error) {
+    console.error('Booking error:', error);
+    showError(error.message || 'Booking failed. Please check your connection and try again.');
+  } finally {
+    // Hide loading state
+    submitBtn.disabled = false;
+    loadingSpinner.style.display = 'none';
+  }
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  loadSlots();
+});
+
+// Add smooth scrolling for form validation errors
+function scrollToFirstError() {
+  const firstError = form.querySelector('.is-invalid');
+  if (firstError) {
+    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    firstError.focus();
+  }
+}
+</script>
+</body>
+</html>
