@@ -471,7 +471,7 @@ async function loadSlots() {
   try {
     slotSelect.innerHTML = '<option value="">Loading available slots...</option>';
     
-    const res = await fetch('http://localhost:5000/api/slots');
+    const res = await fetch('http://interview-scheduler-qbg3.onrender.com/api/slots');
     const data = await res.json();
     
     if (res.ok && data.success) {
@@ -558,7 +558,7 @@ form.addEventListener('submit', async function(e) {
   };
   
   try {
-    const res = await fetch('http://localhost:5000/api/book', {
+    const res = await fetch('http://interview-scheduler-qbg3.onrender.com/api/book', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
