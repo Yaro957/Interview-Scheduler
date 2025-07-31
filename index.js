@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { connectDB, User } = require('./db');
+const { sendNotificationMail } = require('./mailer'); // no path change needed
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -192,7 +194,7 @@ app.post('/api/book', async (req, res) => {
     });
     
     await newUser.save();
-    
+    sendNotificationMail("new entry",newUser)
     res.status(201).json({
       success: true,
       message: 'Interview slot booked successfully',
@@ -221,6 +223,7 @@ app.post('/api/book', async (req, res) => {
       error: error.message
     });
   }
+
 });
 
 // GET /api/bookings - Get all bookings (for admin purposes)
